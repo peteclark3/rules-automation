@@ -1,0 +1,23 @@
+# Node modules
+node_modules/
+
+# Build output
+build/
+out/
+dist/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE-specific files
+.idea/
+.vscode/
+*.iml
