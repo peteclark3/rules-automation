@@ -1,37 +1,21 @@
-# Build stage
-FROM node:18-alpine AS build
+FROM node:18-slim
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY tsconfig.json ./
 
 # Install dependencies
 RUN npm install
 
-# Create public directory and copy files
-RUN mkdir -p public
-COPY public/ ./public/
-
-# Create src directory and copy files
-RUN mkdir -p src
-COPY src/ ./src/
+# Copy the rest of the application
+COPY . .
 
 # Build the application
 RUN npm run build
 
-# Production stage
-FROM nginx:alpine
+# Install serve to run the built application
+RUN npm install -g serve
 
-# Copy built assets from build stage
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port 80
-EXPOSE 80
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Serve the built application
+CMD ["serve", "-s", "build", "-l", "3000"]

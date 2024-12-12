@@ -1,6 +1,6 @@
 # Rules Automation System
 
-A simple rules automation system for managing document requests based on application conditions.
+This project is a simple rules automation system for managing document requests based on application conditions.
 
 ## Overview
 

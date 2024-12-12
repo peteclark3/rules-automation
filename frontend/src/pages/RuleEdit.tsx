@@ -14,6 +14,7 @@ import {
   Grid,
   Link,
   IconButton,
+  Alert,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -36,6 +37,7 @@ interface ValueOption {
 const RuleEdit: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [error, setError] = useState<string | null>(null);
   
   const [rule, setRule] = useState<Rule>({
     name: '',
@@ -141,8 +143,59 @@ const RuleEdit: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: API call to save rule
-    navigate('/');
+    setError(null);
+
+    // Validate conditions
+    const invalidConditions = rule.conditions.some(c => !c.type || !c.value);
+    if (invalidConditions) {
+      setError('All conditions must have both a type and value selected');
+      return;
+    }
+
+    // Validate document types
+    const invalidDocuments = rule.document_types.some(d => !d);
+    if (invalidDocuments) {
+      setError('All document types must be selected');
+      return;
+    }
+
+    console.log('Submitting rule:', rule); // Debug log
+
+    try {
+      const response = await fetch('http://localhost:8000/rules/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(rule),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error response:', errorData); // Debug log
+        throw new Error(errorData.detail || 'Failed to create rule');
+      }
+
+      const savedRule = await response.json();
+      console.log('Rule saved successfully:', savedRule); // Debug log
+
+      navigate('/');
+    } catch (err) {
+      console.error('Error saving rule:', err); // Debug log
+      setError(err instanceof Error ? err.message : 'An error occurred while creating the rule');
+    }
+  };
+
+  const calculateMatchingApplicants = (conditions: Condition[]): number => {
+    // Start with a base number of applicants
+    let baseApplicants = 1000;
+    // Decrease the number for each condition
+    return conditions.reduce((acc, condition) => {
+      if (condition.type && condition.value) {
+        return acc - 100; // Subtract 100 for each filled condition as a mock
+      }
+      return acc;
+    }, baseApplicants);
   };
 
   return (
@@ -153,6 +206,12 @@ const RuleEdit: React.FC = () => {
             {id ? 'Edit Rule' : 'Create New Rule'}
           </Typography>
           
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+          
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
@@ -161,6 +220,7 @@ const RuleEdit: React.FC = () => {
                   label="Rule Name"
                   value={rule.name}
                   onChange={(e) => setRule({ ...rule, name: e.target.value })}
+                  required
                   sx={{
                     '& .MuiInputLabel-root': {
                       backgroundColor: 'white',
@@ -179,7 +239,7 @@ const RuleEdit: React.FC = () => {
               {rule.conditions.map((condition, index) => (
                 <Grid item xs={12} key={`condition-${index}`} container spacing={2}>
                   <Grid item xs={5}>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth required>
                       <InputLabel
                         sx={{
                           backgroundColor: 'white',
@@ -202,7 +262,7 @@ const RuleEdit: React.FC = () => {
                   </Grid>
                   
                   <Grid item xs={6}>
-                    <FormControl fullWidth disabled={!condition.type}>
+                    <FormControl fullWidth disabled={!condition.type} required>
                       <InputLabel
                         sx={{
                           backgroundColor: 'white',
@@ -247,6 +307,14 @@ const RuleEdit: React.FC = () => {
                 </Grid>
               )}
 
+              {rule.conditions.length > 0 && (
+                <Grid item xs={12}>
+                  <Typography variant="body2" color="textSecondary">
+                    Given conditions match with {calculateMatchingApplicants(rule.conditions)} existing applicants.
+                  </Typography>
+                </Grid>
+              )}
+
               <Grid item xs={12}>
                 <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
                   Required Documents
@@ -256,7 +324,7 @@ const RuleEdit: React.FC = () => {
               {rule.document_types.map((doc, index) => (
                 <Grid item xs={12} key={`doc-${index}`} container spacing={2}>
                   <Grid item xs={11}>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth required>
                       <InputLabel
                         sx={{
                           backgroundColor: 'white',

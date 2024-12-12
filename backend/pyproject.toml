@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "rules-automation"
+version = "0.1.0"
+description = "Rules automation system for document requests"
+authors = ["Your Name <your.email@example.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.109.0"
+uvicorn = "^0.27.0"
+sqlalchemy = "^1.4.23"
+psycopg2-binary = "2.9.9"
+pydantic = "^2.6.0"
+python-dotenv = "^0.19.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2"
+black = "^21.5b2"
+flake8 = "^3.9"
+mypy = "^0.910"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api" 

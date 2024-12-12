@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -16,29 +16,50 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+interface Rule {
+  id: string;
+  name: string;
+  conditions: Array<{
+    type: string;
+    value: string;
+  }>;
+  document_types: string[];
+}
+
 const RulesList: React.FC = () => {
   const navigate = useNavigate();
+  const [rules, setRules] = useState<Rule[]>([]);
   
-  // Mock data - replace with API call
-  const rules = [
-    {
-      id: 1,
-      name: 'New Family Document Request',
-      conditions: [
-        { type: 'family_status', value: 'new' },
-        { type: 'business_owner', value: 'true' }
-      ],
-      document_types: ['tax_return', 'business_docs']
-    },
-    {
-      id: 2,
-      name: 'Tax Filing Verification',
-      conditions: [
-        { type: 'tax_filing', value: 'not_filed' }
-      ],
-      document_types: ['income_verification']
-    },
-  ];
+  useEffect(() => {
+    fetchRules();
+  }, []);
+
+  const fetchRules = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/rules/');
+      if (!response.ok) {
+        throw new Error('Failed to fetch rules');
+      }
+      const data = await response.json();
+      setRules(data);
+    } catch (error) {
+      console.error('Error fetching rules:', error);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await fetch(`http://localhost:8000/rules/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete rule');
+      }
+      fetchRules(); // Refresh the list
+    } catch (error) {
+      console.error('Error deleting rule:', error);
+    }
+  };
 
   const getConditionLabel = (condition: { type: string, value: string }) => {
     switch (condition.type) {
@@ -82,7 +103,7 @@ const RulesList: React.FC = () => {
               <ListItem key={rule.id} sx={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                 <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="h6">{rule.name}</Typography>
-                  <IconButton>
+                  <IconButton onClick={() => handleDelete(rule.id)}>
                     <DeleteIcon />
                   </IconButton>
                 </Box>
