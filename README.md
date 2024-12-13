@@ -24,17 +24,17 @@ Prerequisites:
 Running with Docker:
 1. Clone this repository
 2. Start all services with: `docker-compose up -d`
-3. Run initial database schema:    
+3. Run the first migration to create the database schema:    
 ```shell
 docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/migrations/001_initial_schema.sql
   ```
-4. Load sample data:    
+4. Run the second migration to load sample data:    
 ```shell
 docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/migrations/002_sample_data.sql
 ```
 
-5. Access frontend at http://localhost:3000
-6. Access API docs at http://localhost:8000/docs
+5. Access the rules maker at http://localhost:3000
+6. Access the (very basic!) application submission page at http://localhost:3000/apply
 
 Local Development:
 
