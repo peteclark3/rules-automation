@@ -9,72 +9,54 @@ This system allows schools to:
 - Automatically evaluate applications against rules
 - Generate document requests based on matching conditions
 
-## Architecture
-
-The system consists of:
-- Frontend: React/TypeScript application
-- Backend: FastAPI (Python) REST API
-- Database: PostgreSQL for data persistence
-- Monitoring: Prometheus/Grafana for metrics, ELK Stack for logging
-
-## Local Development Setup
+## Setup & Running
 
 Prerequisites:
 - Docker and Docker Compose
 - Node.js 18+ (for local frontend development)
 - Python 3.11+ and Poetry (for local backend development)
 
-To run the entire stack:
-
+Running with Docker:
 1. Clone this repository
-2. Run docker-compose up
-3. Access the application at http://localhost:3000
+2. Start all services with: `docker-compose up -d`
+3. Run initial database schema:    
+```shell
+docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/migrations/001_initial_schema.sql
+  ```
+4. Load sample data:    
+```shell
+docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/migrations/002_sample_data.sql
+```
 
-## Development Environment
+5. Access frontend at http://localhost:3000
+6. Access API docs at http://localhost:8000/docs
 
-Frontend Development:
-1. cd frontend
-2. npm install
-3. npm start
+Local Development:
 
-Backend Development:
-1. cd backend
-2. poetry install
-3. poetry shell
-4. poetry run uvicorn main:app --reload
+Frontend:
+- Navigate to frontend directory
+- Install dependencies with npm install
+- Start development server with npm start
+- Access the rules maker at http://localhost:3000
+- Access the application submission page at http://localhost:3000/apply
 
-## Production Deployment
+Backend:
+- Navigate to backend directory
+- Install dependencies with poetry install
+- Start virtual environment with poetry shell
+- Run server with poetry run uvicorn app.main:app --reload
+- Access at http://localhost:8000
 
-The application is designed to run in Kubernetes with:
-- Horizontal Pod Autoscaling for both frontend and backend
-- Prometheus/Grafana for metrics monitoring
-- ELK Stack for centralized logging
-- Ingress controllers for traffic management
+## Features
 
-## Database Schema
+Available Pages:
+- Rules List: View and manage all rules
+- Create Rule: Define new document request rules
+- Submit Application: Test rule evaluation
 
-Main tables:
-- rules: Stores rule definitions
-- applications: Stores submitted applications
-- document_requests: Stores generated document requests
-- rule_conditions: Stores rule evaluation criteria
-
-## API Documentation
-
-The API documentation is available at /docs when running the backend server.
-
-Key endpoints:
-- POST /api/rules - Create new rule
-- GET /api/rules - List all rules
-- POST /api/applications - Submit new application
-- GET /api/document-requests - List document requests
-
-## Testing
-
-Run backend tests:
-- cd backend
-- poetry run pytest
-
-Run frontend tests:
-- cd frontend
-- npm test
+API Endpoints:
+- GET /rules - List all rules
+- POST /rules - Create new rule
+- GET /rules/{id} - Get specific rule
+- DELETE /rules/{id} - Delete rule
+- POST /applications - Submit application

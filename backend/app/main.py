@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 # Create tables
-db_models.Base.metadata.create_all(bind=engine)
+# db_models.Base.metadata.create_all(bind=engine)
 
 
 @app.post("/rules/", response_model=models.RuleResponse)

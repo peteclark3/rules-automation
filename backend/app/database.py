@@ -13,13 +13,30 @@ SQLALCHEMY_DATABASE_URL = os.getenv(
     "DATABASE_URL", "postgresql://rules_user:rules_password@db:5432/rules_db"
 )
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Don't create engine immediately
+engine = None
+SessionLocal = None
+
+
+def get_engine():
+    global engine
+    if engine is None:
+        engine = create_engine(SQLALCHEMY_DATABASE_URL)
+    return engine
+
+
+def get_session_local():
+    global SessionLocal
+    if SessionLocal is None:
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
+    return SessionLocal
+
 
 Base = declarative_base()
 
 
 def get_db():
+    SessionLocal = get_session_local()
     db = SessionLocal()
     try:
         yield db
