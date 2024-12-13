@@ -1,5 +1,5 @@
 # First, Thank you!
-Thank you for the opportunity to be a part of Clarity Financial!  The accompanying presentation for this submission is [here](https://docs.google.com/presentation/d/19xOeXDpxPrlkXCfAEZkP9zr1EjsgKibXvrQOfHBeiZM/edit?usp=sharing)
+Thank you for the opportunity to be a part of Clarity Financial!  The accompanying presentation for this submission is [here](https://docs.google.com/presentation/d/19xOeXDpxPrlkXCfAEZkP9zr1EjsgKibXvrQOfHBeiZM/edit?usp=sharing).
 
 **_And now, here beginneth the readme..._**
 
@@ -25,7 +25,11 @@ This system allows schools to:
 
 Running with Docker:
 1. Clone this repository
-2. From the repo root, start all services with: `docker-compose up -d` (frontend takes a while to start, apologies!)
+2. From the repo root, start all services with: 
+```shell
+docker-compose up -d
+``` 
+(frontend takes a while to start, apologies!)
 3. Run the first migration to create the database schema:    
 ```shell
 docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/migrations/001_initial_schema.sql
