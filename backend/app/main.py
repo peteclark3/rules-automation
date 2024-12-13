@@ -77,6 +77,73 @@ def delete_rule(rule_id: uuid.UUID, db: Session = Depends(get_db)):
     return {"message": "Rule deleted successfully"}
 
 
+@app.post("/applications/", response_model=models.ApplicationResponse)
+def submit_application(application: models.ApplicationCreate, db: Session = Depends(get_db)):
+    # Create application
+    db_application = db_models.Application(
+        family_id=application.family_id,
+        family_status=application.family_status,
+        business_owner=application.business_owner,
+        tax_filing=application.tax_filing,
+    )
+    db.add(db_application)
+    db.commit()
+    db.refresh(db_application)
+
+    # Evaluate all rules against this application
+    evaluate_rules_for_application(db_application, db)
+
+    return format_application_response(db_application)
+
+
+def evaluate_rules_for_application(application: db_models.Application, db: Session):
+    """Evaluate all rules and create matches for rules that apply."""
+    rules = db.query(db_models.Rule).all()
+
+    for rule in rules:
+        if evaluate_rule_conditions(rule, application):
+            print(f"Rule {rule.name} matches application {application.id}")
+            # Create rule match
+            match = db_models.RuleMatch(rule_id=rule.id, application_id=application.id)
+            db.add(match)
+
+            # Trigger actions (in this case, document requests)
+            trigger_document_requests(rule, application, db)
+
+    db.commit()
+
+
+def evaluate_rule_conditions(rule: db_models.Rule, application: db_models.Application) -> bool:
+    """Check if an application matches all conditions of a rule."""
+    for condition in rule.conditions:
+        if not evaluate_single_condition(condition, application):
+            return False
+    return True
+
+
+def evaluate_single_condition(
+    condition: db_models.Condition, application: db_models.Application
+) -> bool:
+    """Evaluate a single condition against an application."""
+    if condition.condition_type == "family_status":
+        return application.family_status == condition.condition_value
+    elif condition.condition_type == "business_owner":
+        return str(application.business_owner).lower() == condition.condition_value
+    elif condition.condition_type == "tax_filing":
+        return application.tax_filing == condition.condition_value
+    return False
+
+
+def trigger_document_requests(
+    rule: db_models.Rule, application: db_models.Application, db: Session
+):
+    """Create document requests based on rule's required documents."""
+    for document in rule.documents:
+        # In a real system, this might create notifications, emails, or tasks
+        print(f"Requesting document: {document.document_type} for application {application.id}")
+        # You could create a DocumentRequest model to track these
+
+
 def format_rule_response(rule: db_models.Rule) -> models.RuleResponse:
     return models.RuleResponse(
         id=rule.id,
@@ -88,4 +155,17 @@ def format_rule_response(rule: db_models.Rule) -> models.RuleResponse:
         document_types=[doc.document_type for doc in rule.documents],
         created_at=rule.created_at,
         updated_at=rule.updated_at,
+    )
+
+
+def format_application_response(application: db_models.Application) -> models.ApplicationResponse:
+    return models.ApplicationResponse(
+        id=application.id,
+        family_id=application.family_id,
+        family_status=application.family_status,
+        business_owner=application.business_owner,
+        tax_filing=application.tax_filing,
+        created_at=application.created_at,
+        updated_at=application.updated_at,
+        matching_rules=[format_rule_response(rule) for rule in application.matching_rules],
     )

@@ -38,15 +38,22 @@ class ApplicationBase(BaseModel):
     tax_filing: Optional[str]
 
 
-class ApplicationCreate(ApplicationBase):
-    pass
+class ApplicationCreate(BaseModel):
+    family_id: UUID
+    family_status: Optional[str]
+    business_owner: Optional[bool]
+    tax_filing: Optional[str]
 
 
-class ApplicationResponse(ApplicationBase):
+class ApplicationResponse(BaseModel):
     id: UUID
+    family_id: UUID
+    family_status: Optional[str]
+    business_owner: Optional[bool]
+    tax_filing: Optional[str]
     created_at: datetime
     updated_at: datetime
-    matching_rules: List[RuleResponse] = []
+    matching_rules: List[RuleResponse]
 
     class Config:
         from_attributes = True

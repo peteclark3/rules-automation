@@ -5,6 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import theme from './theme';
 import RulesList from './pages/RulesList';
 import RuleEdit from './pages/RuleEdit';
+import Apply from './pages/Apply';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<RulesList />} />
           <Route path="/rules/new" element={<RuleEdit />} />
           <Route path="/rules/:id" element={<RuleEdit />} />
+          <Route path="/apply" element={<Apply />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
