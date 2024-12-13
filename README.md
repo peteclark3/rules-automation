@@ -29,8 +29,7 @@ Running with Docker:
 ```shell
 docker-compose up -d
 ``` 
-(frontend takes a while to start, apologies!)
-3. Run the first migration to create the database schema:    
+3. After waiting an age for the frontend to start, run the first migration to create the database schema:    
 ```shell
 docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/migrations/001_initial_schema.sql
   ```
