@@ -12,9 +12,9 @@ DROP TYPE IF EXISTS tax_filing_enum CASCADE;
 DROP TYPE IF EXISTS family_status_enum CASCADE;
 
 -- Create enum types
-CREATE TYPE family_status_enum AS ENUM ('new', 'returning');
-CREATE TYPE tax_filing_enum AS ENUM ('filed', 'not_filed');
-CREATE TYPE document_type_enum AS ENUM ('tax_return', 'business_docs', 'income_verification');
+CREATE TYPE family_status_enum AS ENUM ('new', 'returning'); -- allows for more than just new and returning
+CREATE TYPE tax_filing_enum AS ENUM ('filed', 'not_filed'); -- allows for more than just filed and not filed
+CREATE TYPE document_type_enum AS ENUM ('tax_return', 'business_docs', 'income_verification'); -- explicit doc types instead of freeform for safety
 
 -- Create tables
 CREATE TABLE rules (
