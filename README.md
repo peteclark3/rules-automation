@@ -16,14 +16,16 @@ This system allows schools to:
 
 ## Setup & Running
 
-Prerequisites:
-- Docker and Docker Compose
+### Prerequisites 
+#### For Running
+- [Docker](https://docs.docker.com/get-docker/)
+#### For Local Development
 - Node.js 18+ (for local frontend development)
 - Python 3.11+ and Poetry (for local backend development)
 
 Running with Docker:
 1. Clone this repository
-2. Start all services with: `docker-compose up -d` (frontend takes a while to start, apologies!)
+2. From the repo root, start all services with: `docker-compose up -d` (frontend takes a while to start, apologies!)
 3. Run the first migration to create the database schema:    
 ```shell
 docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/migrations/001_initial_schema.sql
@@ -32,9 +34,10 @@ docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/mi
 ```shell
 docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/migrations/002_sample_data.sql
 ```
-
 5. Access the rules maker at http://localhost:3000
 6. Access the (very basic!) application submission page at http://localhost:3000/apply
+7. Watch logs with `docker-compose logs -f`
+8. Stop everything with `docker-compose down`
 
 ## Known Issues
 1. When creating a rule, it does not validate that there isn't a conflicting rule, it just creates it.  This can create unexpected behavior.
@@ -43,7 +46,7 @@ docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/mi
 4. Kube manifest files are not included.
 5. Logging and monitoring are not implemented.
 6. There are no unit tests. :( 
-  
+
 ## Local Development
 Frontend:
 - Navigate to frontend directory
