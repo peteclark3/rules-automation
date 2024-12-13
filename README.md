@@ -23,7 +23,7 @@ Prerequisites:
 
 Running with Docker:
 1. Clone this repository
-2. Start all services with: `docker-compose up -d`
+2. Start all services with: `docker-compose up -d` (frontend takes a while to start, apologies!)
 3. Run the first migration to create the database schema:    
 ```shell
 docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/migrations/001_initial_schema.sql
@@ -36,8 +36,15 @@ docker exec -i rules-automation-db-1 psql -U rules_user -d rules_db < backend/mi
 5. Access the rules maker at http://localhost:3000
 6. Access the (very basic!) application submission page at http://localhost:3000/apply
 
-Local Development:
-
+## Known Issues
+1. When creating a rule, it does not validate that there isn't a conflicting rule, it just creates it.  This can create unexpected behavior.
+2. The application submission page is extremely basic and just exists to test the rule engine.
+3. The system does not implement the full architecture specified in the presentation (noted in the presentation also). 
+4. Kube manifest files are not included.
+5. Logging and monitoring are not implemented.
+6. There are no unit tests. :( 
+  
+## Local Development
 Frontend:
 - Navigate to frontend directory
 - Install dependencies with npm install
