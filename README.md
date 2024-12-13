@@ -1,3 +1,8 @@
+# First, Thank you!
+Thank you for the opportunity to be a part of Clarity Financial!  The accompanying presentation for this submission is [here](https://docs.google.com/presentation/d/19xOeXDpxPrlkXCfAEZkP9zr1EjsgKibXvrQOfHBeiZM/edit?usp=sharing)
+
+**_And now, here beginneth the readme..._**
+
 # Rules Automation System
 
 This project is a simple rules automation system for managing document requests based on application conditions.
