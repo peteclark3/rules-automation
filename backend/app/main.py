@@ -8,7 +8,6 @@ import uuid
 
 app = FastAPI()
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # React app's address
@@ -17,27 +16,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create tables
-# db_models.Base.metadata.create_all(bind=engine)
-
 
 @app.post("/rules/", response_model=models.RuleResponse)
 def create_rule(rule: models.RuleCreate, db: Session = Depends(get_db)):
-    # Create and commit the rule first
     db_rule = db_models.Rule(name=rule.name)
     db.add(db_rule)
-    db.commit()  # Commit to get the rule.id
+    db.commit()
     db.refresh(db_rule)
 
     try:
-        # Add conditions
         for condition in rule.conditions:
             db_condition = db_models.Condition(
                 rule_id=db_rule.id, condition_type=condition.type, condition_value=condition.value
             )
             db.add(db_condition)
 
-        # Add required documents
         for doc_type in rule.document_types:
             db_document = db_models.Document(rule_id=db_rule.id, document_type=doc_type)
             db.add(db_document)
@@ -47,14 +40,14 @@ def create_rule(rule: models.RuleCreate, db: Session = Depends(get_db)):
 
         return format_rule_response(db_rule)
     except Exception as e:
-        db.rollback()  # Rollback in case of error
+        db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/rules/", response_model=List[models.RuleResponse])
 def get_rules(db: Session = Depends(get_db)):
     rules = db.query(db_models.Rule).all()
-    print("Found rules:", rules)  # This will show in the Docker logs
+    print("Found rules:", rules)
     return [format_rule_response(rule) for rule in rules]
 
 
@@ -79,7 +72,6 @@ def delete_rule(rule_id: uuid.UUID, db: Session = Depends(get_db)):
 
 @app.post("/applications/", response_model=models.ApplicationResponse)
 def submit_application(application: models.ApplicationCreate, db: Session = Depends(get_db)):
-    # Create application
     db_application = db_models.Application(
         family_id=application.family_id,
         family_status=application.family_status,
@@ -90,7 +82,6 @@ def submit_application(application: models.ApplicationCreate, db: Session = Depe
     db.commit()
     db.refresh(db_application)
 
-    # Evaluate all rules against this application
     evaluate_rules_for_application(db_application, db)
 
     return format_application_response(db_application)
@@ -103,11 +94,9 @@ def evaluate_rules_for_application(application: db_models.Application, db: Sessi
     for rule in rules:
         if evaluate_rule_conditions(rule, application):
             print(f"Rule {rule.name} matches application {application.id}")
-            # Create rule match
             match = db_models.RuleMatch(rule_id=rule.id, application_id=application.id)
             db.add(match)
 
-            # Trigger actions (in this case, document requests)
             trigger_document_requests(rule, application, db)
 
     db.commit()
@@ -139,9 +128,8 @@ def trigger_document_requests(
 ):
     """Create document requests based on rule's required documents."""
     for document in rule.documents:
-        # In a real system, this might create notifications, emails, or tasks
+        # In a future system, this might create notifications, emails, or other
         print(f"Requesting document: {document.document_type} for application {application.id}")
-        # You could create a DocumentRequest model to track these
 
 
 def format_rule_response(rule: db_models.Rule) -> models.RuleResponse:

@@ -55,7 +55,6 @@ class Application(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relationship to track which rules matched this application
     matching_rules = relationship("Rule", secondary="rule_matches", backref="matching_applications")
 
 

@@ -3,7 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-# Add debug logging
 print(
     "Using database URL:",
     os.getenv("DATABASE_URL", "postgresql://rules_user:rules_password@db:5432/rules_db"),
@@ -13,7 +12,6 @@ SQLALCHEMY_DATABASE_URL = os.getenv(
     "DATABASE_URL", "postgresql://rules_user:rules_password@db:5432/rules_db"
 )
 
-# Don't create engine immediately
 engine = None
 SessionLocal = None
 
