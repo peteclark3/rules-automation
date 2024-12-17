@@ -114,13 +114,10 @@ def evaluate_single_condition(
     condition: db_models.Condition, application: db_models.Application
 ) -> bool:
     """Evaluate a single condition against an application."""
-    if condition.condition_type == "family_status":
-        return application.family_status == condition.condition_value
-    elif condition.condition_type == "business_owner":
-        return str(application.business_owner).lower() == condition.condition_value
-    elif condition.condition_type == "tax_filing":
-        return application.tax_filing == condition.condition_value
-    return False
+    application_value = getattr(application, condition.condition_type)
+    if isinstance(application_value, bool):
+        return str(application_value).lower() == condition.condition_value
+    return str(application_value) == condition.condition_value
 
 
 def trigger_document_requests(
