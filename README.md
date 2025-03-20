@@ -1,5 +1,5 @@
 # First, Thank you!
-Thank you for the opportunity to apply to Clarity Financial!  The accompanying presentation for this submission is [here](https://docs.google.com/presentation/d/19xOeXDpxPrlkXCfAEZkP9zr1EjsgKibXvrQOfHBeiZM/edit?usp=sharing).
+The accompanying presentation for this submission is [here](https://docs.google.com/presentation/d/19xOeXDpxPrlkXCfAEZkP9zr1EjsgKibXvrQOfHBeiZM/edit?usp=sharing).
 
 **_And now, here beginneth the readme..._**
 
